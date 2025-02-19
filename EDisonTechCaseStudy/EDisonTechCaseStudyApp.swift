@@ -9,9 +9,21 @@ import SwiftUI
 
 @main
 struct EDisonTechCaseStudyApp: App {
+    @StateObject private var locationViewModel = LocationViewModel()
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(locationViewModel)
+                .onAppear {
+                    locationViewModel.startContinuousFetching()
+                }
+                .onChange(of: scenePhase) {
+                    if scenePhase == .active {
+                        locationViewModel.startContinuousFetching()
+                    }
+                }
         }
     }
 }
