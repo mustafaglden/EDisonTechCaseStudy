@@ -29,7 +29,7 @@ struct MapView: View {
                                 .font(.system(size: 20))
                         }
                     }
-
+                    
                     ForEach(viewModel.savedLocations) { location in
                         Annotation(location.name, coordinate: location.coordinate.coordinate) {
                             Image(systemName: "mappin.circle.fill")
@@ -40,10 +40,12 @@ struct MapView: View {
                 }
                 .onReceive(viewModel.$currentLocation) { newLocation in
                     if isFollowingMarker {
-                        mapPosition = .region(MKCoordinateRegion(
-                            center: newLocation.coordinate,
-                            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                        ))
+                        withAnimation(.easeInOut(duration: 1.5)) {
+                            mapPosition = .region(MKCoordinateRegion(
+                                center: newLocation.coordinate,
+                                span: MKCoordinateSpan(latitudeDelta: 0.008, longitudeDelta: 0.008)
+                            ))
+                        }
                     }
                 }
                 .gesture(DragGesture().onChanged { _ in
@@ -59,10 +61,12 @@ struct MapView: View {
                 HStack {
                     Button(action: {
                         isFollowingMarker = true
-                        mapPosition = .region(MKCoordinateRegion(
-                            center: viewModel.currentLocation.coordinate,
-                            span: MKCoordinateSpan(latitudeDelta: 0.00001, longitudeDelta: 0.00001)
-                        ))
+                        withAnimation(.easeInOut(duration: 1.5)) {
+                            mapPosition = .region(MKCoordinateRegion(
+                                center: viewModel.currentLocation.coordinate,
+                                span: MKCoordinateSpan(latitudeDelta: 0.008, longitudeDelta: 0.008)
+                            ))
+                        }
                     }) {
                         Text("Focus on Marker")
                             .padding()
@@ -73,7 +77,7 @@ struct MapView: View {
                     
                     Button(action: {
                         let newLocation = SavedLocation(coordinate: CLLocationCoordinate2DWrapper(viewModel.currentLocation.coordinate), name: "New Location")
-                        viewModel.saveLocation(newLocation) 
+                        viewModel.saveLocation(newLocation)
                     }) {
                         Text("Save Location")
                             .padding()
@@ -91,6 +95,5 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView()
+    MapView().environmentObject(LocationViewModel())
 }
-
