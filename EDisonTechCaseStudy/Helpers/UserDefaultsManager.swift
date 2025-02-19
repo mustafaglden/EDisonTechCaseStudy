@@ -47,7 +47,7 @@ final class UserDefaultsManager {
         if let index = savedLocations.firstIndex(where: { $0.id == location.id }) {
             savedLocations[index].name = newName
             DispatchQueue.global(qos: .background).async {
-                saveAllLocations(savedLocations) // ✅ Save without blocking UI
+                saveAllLocations(savedLocations) 
             }
         }
     }

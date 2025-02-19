@@ -61,7 +61,7 @@ struct MapView: View {
                         isFollowingMarker = true
                         mapPosition = .region(MKCoordinateRegion(
                             center: viewModel.currentLocation.coordinate,
-                            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                            span: MKCoordinateSpan(latitudeDelta: 0.00001, longitudeDelta: 0.00001)
                         ))
                     }) {
                         Text("Focus on Marker")
@@ -73,7 +73,7 @@ struct MapView: View {
                     
                     Button(action: {
                         let newLocation = SavedLocation(coordinate: CLLocationCoordinate2DWrapper(viewModel.currentLocation.coordinate), name: "New Location")
-                        viewModel.saveLocation(newLocation) // ✅ Call viewModel function
+                        viewModel.saveLocation(newLocation) 
                     }) {
                         Text("Save Location")
                             .padding()

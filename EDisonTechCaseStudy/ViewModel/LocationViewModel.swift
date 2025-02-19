@@ -87,7 +87,7 @@ final class LocationViewModel: ObservableObject {
         if let index = savedLocations.firstIndex(where: { $0.id == location.id }) {
             savedLocations[index].name = newName
             UserDefaultsManager.renameLocation(savedLocations[index], newName: newName)
-            DispatchQueue.main.async { // ✅ Ensure the UI updates immediately
+            DispatchQueue.main.async {
                 self.savedLocations = UserDefaultsManager.getSavedLocations()
             }
         }
