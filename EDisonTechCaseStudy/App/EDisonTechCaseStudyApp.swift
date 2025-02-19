@@ -24,6 +24,7 @@ struct EDisonTechCaseStudyApp: App {
                         locationViewModel.startContinuousFetching()
                     }
                 }
+                .preferredColorScheme(.dark)
         }
     }
 }
