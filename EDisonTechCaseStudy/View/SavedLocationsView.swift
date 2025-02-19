@@ -5,73 +5,6 @@
 //  Created by Mustafa on 15.02.2025.
 //
 
-//import SwiftUI
-//import MapKit
-//
-//struct SavedLocationsView: View {
-//    @EnvironmentObject var viewModel: LocationViewModel
-//    @State private var editingLocation: SavedLocation?
-//    @State private var newName: String = ""
-//    
-//    var body: some View {
-//        NavigationView {
-//            VStack {
-//                Text("Saved Locations")
-//                    .font(.title2)
-//                    .fontWeight(.bold)
-//                    .foregroundStyle(.black)
-//                    .padding()
-//                List {
-//                    ForEach(viewModel.savedLocations, id: \.id) { location in
-//                        HStack {
-//                            VStack(alignment: .leading) {
-//                                Text(location.name.isEmpty ? "Lat: \(location.coordinate.latitude), Lon: \(location.coordinate.longitude)" : location.name)
-//                                Text("Lat: \(location.coordinate.latitude)")
-//                                Text("Lon: \(location.coordinate.longitude)")
-//                            }
-//                            Spacer()
-//                            Button(action: {
-//                                editingLocation = viewModel.savedLocations.first(where: { $0.id == location.id }) //  Find location safely
-//                                newName = editingLocation?.name ?? "" //  Assign only if found
-//                            }) {
-//                                Image(systemName: "pencil")
-//                                    .foregroundColor(.blue)
-//                            }
-//
-//                            Button(action: {
-//                                viewModel.removeLocation(location)
-//                            }) {
-//                                Image(systemName: "trash")
-//                                    .foregroundColor(.red)
-//                            }
-//                        }
-//                    }
-//                }
-//                .sheet(item: $editingLocation) { location in
-//                    VStack {
-//                        TextField("Enter new name", text: $newName)
-//                            .textFieldStyle(RoundedBorderTextFieldStyle())
-//                            .padding()
-//                        Button("Save") {
-//                            guard let editingLocation = editingLocation else { return }
-//                            guard !newName.isEmpty else { return }
-//                            viewModel.renameLocation(editingLocation, newName: newName)
-//                            self.editingLocation = nil
-//                        }
-//                        .padding()
-//                    }
-//                }
-//            }
-//            .onAppear {
-//                refreshSavedLocations()
-//            }
-//        }
-//    }
-//    private func refreshSavedLocations() {
-//        viewModel.savedLocations = UserDefaultsManager.getSavedLocations()
-//    }
-//}
-
 import SwiftUI
 import MapKit
 
@@ -84,11 +17,6 @@ struct SavedLocationsView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Saved Locations")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.black)
-                    .padding()
                 List {
                     ForEach(viewModel.savedLocations.indices, id: \ .self) { index in
                         HStack {
@@ -112,16 +40,57 @@ struct SavedLocationsView: View {
                                     newName = viewModel.savedLocations[index].name
                                 }) {
                                     Image(systemName: "pencil")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(.white)
+                                        .padding(8)
+                                        .background(RoundedRectangle(cornerRadius: 8).fill(Color.blue))
                                 }
                             }
                         }
                     }
                     .onDelete(perform: deleteLocation)
                 }
-                .navigationTitle("Saved Locations")
                 .toolbar {
-                    EditButton()
+                    ToolbarItem(placement: .principal) {
+                        Text("Saved Locations")
+                            .font(.title)
+                            .fontWeight(.bold)
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        HStack {
+                            if editMode == .active {
+                                Button(action: {
+                                    if let index = editingLocationIndex {
+                                        saveEdit(index: index)
+                                    }
+                                    withAnimation {
+                                        editMode = .inactive
+                                    }
+                                }) {
+                                    Text("Done")
+                                        .fontWeight(.bold)
+                                        .padding()
+                                        .background(Color.green)
+                                        .foregroundColor(.primary)
+                                        .cornerRadius(8)
+                                }
+                            } else {
+                                Button(action: {
+                                    withAnimation {
+                                        editMode = .active
+                                    }
+                                }) {
+                                    Text("Edit")
+                                        .fontWeight(.bold)
+                                        .padding()
+                                        .background(Color.cherryRed)
+                                        .foregroundColor(.primary)
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+                    }
                 }
                 .environment(\.editMode, $editMode)
             }
@@ -134,6 +103,9 @@ struct SavedLocationsView: View {
     private func saveEdit(index: Int) {
         guard !newName.isEmpty else { return }
         viewModel.renameLocation(viewModel.savedLocations[index], newName: newName)
+        DispatchQueue.main.async {
+            viewModel.savedLocations = UserDefaultsManager.getSavedLocations()
+        }
         editingLocationIndex = nil
     }
     

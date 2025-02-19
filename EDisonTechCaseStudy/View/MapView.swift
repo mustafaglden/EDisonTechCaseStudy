@@ -85,6 +85,8 @@ struct MapView: View {
                 .padding(.bottom, 20)
             }
         }
+        .toolbarBackground(Color(.softGray), for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }
 

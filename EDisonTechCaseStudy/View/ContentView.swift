@@ -22,10 +22,13 @@ struct ContentView: View {
                     Text("Map")
                 }
         }
-        .accentColor(.red)
+        .onAppear() {
+            UITabBar.appearance().backgroundColor = .softGray
+        }
+        .accentColor(.softBlack)
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(LocationViewModel())
 }
